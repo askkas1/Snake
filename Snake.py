@@ -1,11 +1,12 @@
 from random import randint, randrange
 import pygame
+import pygame_gui
 import threading
 from time import sleep
 
 
 class Field():
-    fps = 60
+    fps = 5
     food_list = []
     snakes_list = []
     margin = 1
@@ -22,6 +23,7 @@ class Field():
         self.size_block = size_block
         self.snake_length = snake_length
         self.init_game()
+
 
     def add_snake(self, snake):
         self.snakes_list.append(snake)
@@ -66,22 +68,29 @@ class Field():
         size = (self.count_blocks_x * (self.size_block + self.margin) + 700,
                 self.count_blocks_y * (self.size_block + self.margin) + 100)
         self.screen = pygame.display.set_mode(size)
+        self.manager = pygame_gui.UIManager(size)
         self.screen.fill(self.frame_color)
         self.draw_field()
 
-    def game(self):
-        clock = pygame.time.Clock()
-        while True:
-            pygame.event.get()
-            # pygame.event.pump()
-            # pygame.event.wait()
-            # for event in pygame.event.get():
-            #     if event.type == pygame.QUIT:
-            #         pygame.quit()
 
-            self.render()
+    def game(self):
+         self.clock = pygame.time.Clock()
+         pygame.event.set_grab(True)
+
+         while True:
+            pygame.event.get()
+            pygame.key.get_focused()
             pygame.display.update()
-            clock.tick(self.fps)
+            self.clock.tick(self.fps)
+        #
+        #
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             self.gui_running = False
+        #
+        #         self.manager.process_events(event)
+            # pygame.display.update()
+            # self.clock.tick(self.fps)
 
     def draw_food(self):
         for food in self.food_list:
@@ -227,8 +236,10 @@ class Snake():
 def make_snake_thread(field):
     s = Snake(field)
     while True:
-        pygame.event.get()
         s.move(f, randrange(0, 4))
+        # pygame.event.get()
+        # pygame.display.update()
+        # field.clock.tick(field.fps)
 
 
 
@@ -239,9 +250,12 @@ if __name__ == '__main__':
     f.generate_food(1000)
     main_threat.start()
     i=1
-    for i in range(100):
+    # make_snake_thread(f)
+    for i in range(1):
         s=threading.Thread(name=f"Thread_{i}",target=make_snake_thread,args=(f,))
         s.start()
+
+
 
 
 
